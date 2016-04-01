@@ -8,6 +8,9 @@
     <a href="/todo">Todo</a>
     <a href="/">Home</a>
   </div>
+  <% if session[:message] %>
+    <div><%= session.delete :message %></div>
+  <% end %>
   <div>
     <%= yield %>
   </div>

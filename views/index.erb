@@ -1,0 +1,9 @@
+<h1>My Subscriptions</h1>
+
+<p><a href="/add">Add Subscription</a></p>
+
+<ul>
+  <% @subscriptions.each do |subscription, _values| %>
+    <li><a href="/#"><%= subscription %></a></li>
+  <% end %>
+</ul>
