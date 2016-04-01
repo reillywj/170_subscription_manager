@@ -13,9 +13,9 @@ end
 
 def subscription_path
   if ENV['RACK_ENV'] == 'test'
-    File.expand_path('./test/subscriptions.yml')
+    File.expand_path('../test/subscriptions.yml', __FILE__)
   else
-    File.expand_path('./subscriptions.yml')
+    File.expand_path('../subscriptions.yml', __FILE__)
   end
 end
 
