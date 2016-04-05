@@ -4,6 +4,6 @@
 
 <ul>
   <% @subscriptions.each do |subscription, _values| %>
-    <li><a href="/#"><%= subscription %></a></li>
+    <li><a href="/<%= subscription %>"><%= subscription %></a></li>
   <% end %>
 </ul>
