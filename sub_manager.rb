@@ -38,7 +38,8 @@ end
 
 def subscription(sub_name)
   sub = subscriptions_to_manage[sub_name]
-  @name = sub_name
+  @slug = sub_name
+  @name = sub['name']
   @url = sub['url']
   @frequency = FREQUENCY[sub['frequency']]
   @cost = Money.new(sub['cost'], 'USD')
