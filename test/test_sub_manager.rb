@@ -30,11 +30,15 @@ class SubManagerTest < Minitest::Test
     assert_equal 200, last_response.status
   end
 
-  def add_subscription(name='hbr', url='www.hbr.com', frequency='1', amount='100.00')
-
-    post '/add', {'name' => name, 'url' => url, 'frequency'=>frequency, 'cost' => amount}
+  def add_subscription(name = 'hbr',
+                       url = 'www.hbr.com',
+                       frequency = '1',
+                       amount = '100.00')
+    post '/add', 'name' => name,
+                 'url' => url,
+                 'frequency' => frequency,
+                 'cost' => amount
   end
-
 
   # -------------------Tests-------------
 
@@ -49,20 +53,16 @@ class SubManagerTest < Minitest::Test
   def test_new
     get '/add'
     response_200?
-    body_includes 'Add New Subscription',
-                  '</form>',
+    body_includes 'Add New Subscription', '</form>',
                   '<button type="submit">Add</button>',
-                  'frequency',
-                  'cost',
-                  'url'
+                  'frequency', 'cost', 'url'
 
     add_subscription
     assert_equal 302, last_response.status
 
     follow_redirect!
     expected_message = 'hbr has been added to your subscriptions.'
-    body_includes 'hbr',
-                  expected_message
+    body_includes 'hbr', expected_message
 
     get '/'
     refute_includes last_response.body, expected_message
@@ -74,11 +74,7 @@ class SubManagerTest < Minitest::Test
 
     get '/hbr'
     response_200?
-    body_includes 'hbr',
-                  'www.hbr.com',
-                  '$100.00/year',
-                  '/hbr/edit',
-                  'Edit'
+    body_includes 'hbr', 'www.hbr.com', '$100.00/year', '/hbr/edit', 'Edit'
   end
 
   def test_invalid_subscription
