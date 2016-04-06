@@ -15,6 +15,22 @@ end
 FREQUENCY = {1=> 'year', 2=> 'six months', 4=>'quarter', 12=>'month'}
 Money.use_i18n = false
 
+helpers do
+  def form_frequency(freq)
+    return_text = ''
+    FREQUENCY.each do |num, name|
+      id = "f#{num}"
+      return_text += "<input type='radio' name='frequency' id='#{id}' value='#{num}' #{"checked='checked'" if num == freq}/><label for='#{id}'>per #{name}</label>"
+      return_text += "<br>" unless num == 12
+    end
+    return_text
+  end
+
+  def frequency_to_s(freq)
+    FREQUENCY[freq]
+  end
+end
+
 def subscription_path
   if ENV['RACK_ENV'] == 'test'
     File.expand_path('../test/subscriptions.yml', __FILE__)
@@ -41,7 +57,7 @@ def subscription(sub_name)
   @slug = sub_name
   @name = sub['name']
   @url = sub['url']
-  @frequency = FREQUENCY[sub['frequency']]
+  @frequency = sub['frequency']
   @cost = Money.new(sub['cost'], 'USD')
 end
 
@@ -62,7 +78,11 @@ end
 class String
   def to_cents
     dollars, cents = self.split('.')
-    dollars.to_i * 100 + cents.to_i
+    dollars = dollars.to_i * 100
+    unless cents.nil?
+      cents = cents + '0' if cents.size == 1
+    end
+    dollars + cents.to_i
   end
 end
 
@@ -109,3 +129,42 @@ get '/:subscription' do
     invalid_request
   end
 end
+
+get '/:subscription/edit' do
+  if subscriptions_to_manage.key? params[:subscription]
+    subscription params[:subscription]
+    erb :edit
+  else
+    invalid_request
+  end
+end
+
+post '/:subscription/edit' do
+  set_subscription_params
+  if validate_subscription_params
+    subscriptions = subscriptions_to_manage
+    subscriptions.delete params[:subscription]
+    slug = sluggify @name
+    subscriptions[slug] = { 'name' => @name, 'cost' => @cost.to_cents, 'frequency' => @frequency.to_i, 'url' => @url}
+    update_subscriptions subscriptions
+
+    session[:message] = "#{@name} has been updated."
+    redirect "/#{slug}"
+  else
+    session[:message] = 'Invalid.'
+    erb :edit
+  end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+

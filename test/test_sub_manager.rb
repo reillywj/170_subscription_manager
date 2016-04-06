@@ -26,8 +26,14 @@ class SubManagerTest < Minitest::Test
     end
   end
 
-  def response_200?
-    assert_equal 200, last_response.status
+  def method_missing(method_sym, *arguments, &block)
+    regex_to_match = /^response_(\d{3})\?/
+    if method_sym.to_s =~ regex_to_match
+      number = method_sym.to_s.match(regex_to_match).to_a.last.to_i
+      assert_equal number, last_response.status
+    else
+      super
+    end
   end
 
   def add_subscription(name = 'hbr',
@@ -58,7 +64,7 @@ class SubManagerTest < Minitest::Test
                   'frequency', 'cost', 'url'
 
     add_subscription
-    assert_equal 302, last_response.status
+    response_302?
 
     follow_redirect!
     expected_message = 'hbr has been added to your subscriptions.'
@@ -79,7 +85,7 @@ class SubManagerTest < Minitest::Test
 
   def test_invalid_subscription
     get '/hbr'
-    assert_equal 302, last_response.status
+    response_302?
 
     follow_redirect!
     response_200?
@@ -93,6 +99,33 @@ class SubManagerTest < Minitest::Test
     get '/slugify-me'
     response_200?
     body_includes 'Slugify Me!', 'www.slugify-me.com', '$10.99/month'
+  end
+
+  def test_edit
+    add_subscription
+    follow_redirect!
+
+    get '/hbr/edit'
+    response_200?
+    body_includes 'hbr', 'hbr', 'www.hbr.com', '100.00', '/hbr/edit', '<form'
+  end
+
+  def test_update_subscription
+    add_subscription
+    follow_redirect!
+
+    post '/hbr/edit',
+         'name' => 'Harvard Business Review',
+         'url' => 'www.hbr.com',
+         'frequency' => '1',
+         'cost' => '250.2'
+    response_302?
+    follow_redirect!
+
+    response_200?
+    body_includes 'Harvard Business Review',
+                  'www.hbr.com',
+                  '$250.20/year'
   end
 end
 
