@@ -3,6 +3,7 @@ require 'sinatra/reloader'
 require 'erubis'
 require 'yaml'
 require 'money'
+require_relative 'css_helper_methods'
 
 require 'pry'
 
@@ -29,7 +30,44 @@ helpers do
   def frequency_to_s(freq)
     FREQUENCY[freq]
   end
+
+  def show_subscriptions
+    return_value = CSSHelpers.table do
+      total = 0
+      table_components = ''
+      table_components += CSSHelpers.thead do
+        CSSHelpers.tr do
+          CSSHelpers.th {'Subscription'} + CSSHelpers.th {'Cost/Year'}
+        end
+      end
+      table_components += CSSHelpers.tbody do
+        subs = ''
+        @subscriptions.each do |slug, values|
+          subs += CSSHelpers.tr do
+            tds = ''
+            tds += CSSHelpers.td { "<a href='/#{slug}'>#{values['name']}</a>" }
+            cost = values['cost'] * values['frequency']
+            total += cost
+            tds += CSSHelpers.td { "$#{Money.new(cost, 'USD')}" }
+            tds
+          end
+        end
+        subs
+      end
+      table_components += CSSHelpers.tfoot do
+        CSSHelpers.tr do
+          tds = ''
+          tds += CSSHelpers.td { 'Total' }
+          tds += CSSHelpers.td { "$#{Money.new(total, 'USD')}" }
+        end
+      end
+      table_components
+    end
+    return_value
+  end
 end
+
+
 
 def subscription_path
   if ENV['RACK_ENV'] == 'test'

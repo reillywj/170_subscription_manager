@@ -2,8 +2,4 @@
 
 <p><a href="/add">Add Subscription</a></p>
 
-<ul>
-  <% @subscriptions.each do |subscription, _values| %>
-    <li><a href="/<%= subscription %>"><%= subscription %></a></li>
-  <% end %>
-</ul>
+<%= show_subscriptions %>

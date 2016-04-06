@@ -49,11 +49,12 @@ class SubManagerTest < Minitest::Test
   # -------------------Tests-------------
 
   def test_index
-    add_subscription
+    add_subscription 'Harvard Business Review'
+    follow_redirect!
 
     get '/'
     response_200?
-    body_includes 'Add', 'hbr'
+    body_includes 'Add Subscription', 'Harvard Business Review', '/harvard-business-review', 'Total'
   end
 
   def test_new
@@ -125,7 +126,7 @@ class SubManagerTest < Minitest::Test
     response_200?
     body_includes 'Harvard Business Review',
                   'www.hbr.com',
-                  '$250.20/year'
+                  '$250.20/year', 'Harvard Business Review has been updated.'
   end
 end
 
