@@ -19,3 +19,8 @@ rosehulman:
   cost: 125000
   frequency: 12
   url: www.rose-hulman.edu
+test:
+  name: Test
+  cost: 30000
+  frequency: 1
+  url: www.strong.com

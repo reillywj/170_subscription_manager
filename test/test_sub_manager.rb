@@ -108,7 +108,7 @@ class SubManagerTest < Minitest::Test
 
     get '/hbr/edit'
     response_200?
-    body_includes 'hbr', 'hbr', 'www.hbr.com', '100.00', '/hbr/edit', '<form'
+    body_includes 'hbr', 'hbr', 'www.hbr.com', '100.00', '/hbr/edit', '<form', '<button type="submit">Update</button>'
   end
 
   def test_update_subscription
