@@ -3,7 +3,7 @@ require 'sinatra/reloader'
 require 'erubis'
 require 'yaml'
 require 'money'
-require_relative 'css_helper_methods'
+require_relative 'html_helper'
 
 require 'pry'
 
@@ -32,35 +32,35 @@ helpers do
   end
 
   def show_subscriptions
-    table = CSSHelpers::HTMLTag.new('table')
-    thead = CSSHelpers::HTMLTag.new('thead')
+    table = HTML::Tag.new('table')
+    thead = HTML::Tag.new('thead')
     headers = ['Subscription', '$ per Year']
-    head_tr = CSSHelpers::HTMLTag.new('tr')
+    head_tr = HTML::Tag.new('tr')
     headers.each do |text|
-      head_tr << CSSHelpers::HTMLTag.new('th', text)
+      head_tr << HTML::Tag.new('th', text)
     end
     thead << head_tr
     table << thead
 
-    tbody = CSSHelpers::HTMLTag.new('tbody')
+    tbody = HTML::Tag.new('tbody')
     total = Money.new(0,'USD')
     @subscriptions.each do |slug, values|
-      body_tr = CSSHelpers::HTMLTag.new('tr')
-      sub = CSSHelpers::HTMLTag.new('td')
-      sub_link = CSSHelpers::HTMLTag.new('a', values['name'], {'href'=>"/#{slug}"})
+      body_tr = HTML::Tag.new('tr')
+      sub = HTML::Tag.new('td')
+      sub_link = HTML::Tag.new('a', values['name'], {'href'=>"/#{slug}"})
       sub << sub_link
       body_tr << sub
       cost = Money.new(values['cost'] * values['frequency'], 'USD')
       total += cost
-      body_tr << CSSHelpers::HTMLTag.new('td', "#{cost.format}")
+      body_tr << HTML::Tag.new('td', "#{cost.format}")
       tbody << body_tr
     end
     table << tbody
 
-    tfoot = CSSHelpers::HTMLTag.new('tfoot')
-    foot_tr = CSSHelpers::HTMLTag.new('tr')
-    foot_tr << CSSHelpers::HTMLTag.new('th', 'Total')
-    foot_tr << CSSHelpers::HTMLTag.new('th', total.format)
+    tfoot = HTML::Tag.new('tfoot')
+    foot_tr = HTML::Tag.new('tr')
+    foot_tr << HTML::Tag.new('th', 'Total')
+    foot_tr << HTML::Tag.new('th', total.format)
     tfoot << foot_tr
     table << tfoot
     table.to_s

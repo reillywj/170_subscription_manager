@@ -1,4 +1,4 @@
-module CSSHelpers
+module HTML
     # def self.method_missing(method_sym, *arguments, &block)
     #   if method_sym.to_s =~ /^t.*/
     #     "<#{method_sym}>#{yield}</#{method_sym}>"
@@ -7,7 +7,7 @@ module CSSHelpers
     #   end
     # end
 
-  class HTMLTag
+  class Tag
     attr_reader :tag, :text
     def initialize(tag, text = '', attributes = {})
       @tag = tag
