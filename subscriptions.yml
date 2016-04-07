@@ -9,13 +9,13 @@ harvard-business-review:
   cost: 10020
   frequency: 1
   url: www.hbr.com
-rose-hulman:
-  name: Rose Hulman
-  cost: 125000
-  frequency: 12
-  url: www.rose-hulman.edu
 amazon:
   name: Amazon
   cost: 9900
   frequency: 1
   url: www.amazon.com
+rosehulman:
+  name: Rose-Hulman
+  cost: 125000
+  frequency: 12
+  url: www.rose-hulman.edu

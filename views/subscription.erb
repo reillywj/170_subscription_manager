@@ -2,5 +2,5 @@
 <p><a href="/<%= @slug %>/edit">Edit</a></p>
 <ul>
   <li><a href="http://<%= @url %>"><%= @url %></a></li>
-  <li><%= "$#{@cost}/#{frequency_to_s @frequency}"%></li>
+  <li><%= "#{@cost.format}/#{frequency_to_s @frequency}"%></li>
 </ul>

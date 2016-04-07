@@ -32,38 +32,38 @@ helpers do
   end
 
   def show_subscriptions
-    return_value = CSSHelpers.table do
-      total = 0
-      table_components = ''
-      table_components += CSSHelpers.thead do
-        CSSHelpers.tr do
-          CSSHelpers.th {'Subscription'} + CSSHelpers.th {'Cost/Year'}
-        end
-      end
-      table_components += CSSHelpers.tbody do
-        subs = ''
-        @subscriptions.each do |slug, values|
-          subs += CSSHelpers.tr do
-            tds = ''
-            tds += CSSHelpers.td { "<a href='/#{slug}'>#{values['name']}</a>" }
-            cost = values['cost'] * values['frequency']
-            total += cost
-            tds += CSSHelpers.td { "$#{Money.new(cost, 'USD')}" }
-            tds
-          end
-        end
-        subs
-      end
-      table_components += CSSHelpers.tfoot do
-        CSSHelpers.tr do
-          tds = ''
-          tds += CSSHelpers.td { 'Total' }
-          tds += CSSHelpers.td { "$#{Money.new(total, 'USD')}" }
-        end
-      end
-      table_components
+    table = CSSHelpers::HTMLTag.new('table')
+    thead = CSSHelpers::HTMLTag.new('thead')
+    headers = ['Subscription', '$ per Year']
+    head_tr = CSSHelpers::HTMLTag.new('tr')
+    headers.each do |text|
+      head_tr << CSSHelpers::HTMLTag.new('th', text)
     end
-    return_value
+    thead << head_tr
+    table << thead
+
+    tbody = CSSHelpers::HTMLTag.new('tbody')
+    total = Money.new(0,'USD')
+    @subscriptions.each do |slug, values|
+      body_tr = CSSHelpers::HTMLTag.new('tr')
+      sub = CSSHelpers::HTMLTag.new('td')
+      sub_link = CSSHelpers::HTMLTag.new('a', values['name'], {'href'=>"/#{slug}"})
+      sub << sub_link
+      body_tr << sub
+      cost = Money.new(values['cost'] * values['frequency'], 'USD')
+      total += cost
+      body_tr << CSSHelpers::HTMLTag.new('td', "#{cost.format}")
+      tbody << body_tr
+    end
+    table << tbody
+
+    tfoot = CSSHelpers::HTMLTag.new('tfoot')
+    foot_tr = CSSHelpers::HTMLTag.new('tr')
+    foot_tr << CSSHelpers::HTMLTag.new('th', 'Total')
+    foot_tr << CSSHelpers::HTMLTag.new('th', total.format)
+    tfoot << foot_tr
+    table << tfoot
+    table.to_s
   end
 end
 
