@@ -194,7 +194,19 @@ post '/:subscription/edit' do
   end
 end
 
+post '/:subscription/delete' do
+  sub_to_delete = params[:subscription]
 
+  if subscriptions_to_manage.include? sub_to_delete
+    subs = subscriptions_to_manage
+    subs.delete sub_to_delete
+    update_subscriptions subs
+    session[:message] = "#{sub_to_delete} was deleted."
+    redirect '/'
+  else
+    invalid_request
+  end
+end
 
 
 

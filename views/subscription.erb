@@ -1,5 +1,5 @@
 <h1><%= @name %></h1>
-<p><a href="/<%= @slug %>/edit">Edit</a></p>
+<p><a href="/<%= @slug %>/edit">Edit</a> | <form method="post" action="/<%= @slug %>/delete"><button type="submit">Delete</button></form></p>
 <ul>
   <li><a href="http://<%= @url %>"><%= @url %></a></li>
   <li><%= "#{@cost.format}/#{frequency_to_s @frequency}"%></li>

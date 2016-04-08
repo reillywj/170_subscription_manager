@@ -126,7 +126,25 @@ class SubManagerTest < Minitest::Test
     response_200?
     body_includes 'Harvard Business Review',
                   'www.hbr.com',
-                  '$250.20/year', 'Harvard Business Review has been updated.'
+                  '$250.20/year', 'Harvard Business Review has been updated.', '/harvard-business-review'
+  end
+
+  def test_delete_subscription
+    add_subscription
+    follow_redirect!
+
+    get '/hbr'
+    body_includes '/hbr', '/hbr/delete', 'Delete'
+
+    post '/hbr/delete'
+    response_302?
+    follow_redirect!
+
+    response_200?
+    body_includes 'hbr was deleted.'
+
+    get '/'
+    refute_includes last_response.body, 'hbr'
   end
 end
 
