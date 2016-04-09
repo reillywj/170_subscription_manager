@@ -1,0 +1,33 @@
+body {
+  font-family: Arial;
+  background-color: tomato;
+}
+
+.message {
+  background-color: yellow;
+  font-size: 20px;
+  text-align: center;
+}
+
+.link, .link:visited, form.delete {
+  text-decoration: none;
+  color: blue;
+  display: inline;
+  font-size: 18px;
+}
+
+.link.subscription {
+  font-size: 14px;
+}
+
+table {
+  font-size: 14px;
+}
+th {
+  font: bold 18px;
+  color: black;
+}
+
+td:nth-of-type(2) {
+  text-align: right;
+}

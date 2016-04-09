@@ -2,16 +2,17 @@
 <html>
 <head>
   <title>My Subscriptions</title>
+  <link rel="stylesheet" type="text/css" href="/main.css">
 </head>
 <body>
   <div>
     <a href="/todo">Todo</a>
-    <a href="/">Home</a>
+    <a href="/" class="link">Home</a>
   </div>
   <% if session[:message] %>
-    <div><%= session.delete :message %></div>
+    <div class="message"><%= session.delete :message %></div>
   <% end %>
-  <div>
+  <div class="main">
     <%= yield %>
   </div>
 

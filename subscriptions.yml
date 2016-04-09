@@ -4,11 +4,6 @@ att:
   cost: 40000
   frequency: 12
   url: www.att.com
-harvard-business-review:
-  name: Harvard Business Review
-  cost: 10020
-  frequency: 1
-  url: www.hbr.com
 amazon:
   name: Amazon
   cost: 9900
@@ -19,3 +14,13 @@ rosehulman:
   cost: 125000
   frequency: 12
   url: www.rose-hulman.edu
+harvard-business-review:
+  name: Harvard Business Review
+  cost: 10020
+  frequency: 1
+  url: www.hbr.com
+code-academy:
+  name: Code Academy
+  cost: 1999
+  frequency: 12
+  url: www.codeacademy.com

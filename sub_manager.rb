@@ -47,7 +47,7 @@ helpers do
     @subscriptions.each do |slug, values|
       body_tr = HTML::Tag.new('tr')
       sub = HTML::Tag.new('td')
-      sub_link = HTML::Tag.new('a', values['name'], {'href'=>"/#{slug}"})
+      sub_link = HTML::Tag.new('a', values['name'], {'href'=>"/#{slug}", 'class' => 'link subscription'})
       sub << sub_link
       body_tr << sub
       cost = Money.new(values['cost'] * values['frequency'], 'USD')
