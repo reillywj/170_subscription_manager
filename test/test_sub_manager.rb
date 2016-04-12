@@ -46,7 +46,23 @@ class SubManagerTest < Minitest::Test
                  'cost' => amount
   end
 
+  def create_user(username='Jerry', password='password')
+  end
+
   # -------------------Tests-------------
+
+  def test_signup
+    get '/signup'
+    response_200?
+    body_includes 'Username', 'Password', 'Create User', 'Cancel', '<input'
+  end
+
+  def test_invalid_signup
+  end
+
+  def test_login
+    skip
+  end
 
   def test_index
     add_subscription 'Harvard Business Review'

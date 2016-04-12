@@ -24,3 +24,8 @@ code-academy:
   cost: 1999
   frequency: 12
   url: www.codeacademy.com
+launchschool:
+  name: LaunchSchool
+  cost: 29900
+  frequency: 12
+  url: www.launchschool.com

@@ -67,7 +67,7 @@ helpers do
   end
 end
 
-
+# HELPERS----------------------------------------------------------------
 
 def subscription_path
   if ENV['RACK_ENV'] == 'test'
@@ -113,15 +113,13 @@ def validate_subscription_params
   [1, 2, 4, 12].include?(@frequency)
 end
 
-class String
-  def to_cents
-    dollars, cents = self.split('.')
-    dollars = dollars.to_i * 100
-    unless cents.nil?
-      cents = cents + '0' if cents.size == 1
-    end
-    dollars + cents.to_i
+def to_cents(input_string)
+  dollars, cents = input_string.split('.')
+  dollars = dollars.to_i * 100
+  unless cents.nil?
+    cents += '0' if cents.size == 1
   end
+  dollars + cents.to_i
 end
 
 def set_subscription_params
@@ -148,7 +146,7 @@ post '/add' do
   set_subscription_params
   if validate_subscription_params
     subscriptions = subscriptions_to_manage
-    subscriptions[sluggify @name] = {'name' => @name, 'cost' => @cost.to_cents, 'frequency' => @frequency.to_i, 'url' => @url}
+    subscriptions[sluggify @name] = {'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
     update_subscriptions subscriptions
 
     session[:message] = "#{@name} has been added to your subscriptions."
@@ -183,7 +181,7 @@ post '/:subscription/edit' do
     subscriptions = subscriptions_to_manage
     subscriptions.delete params[:subscription]
     slug = sluggify @name
-    subscriptions[slug] = { 'name' => @name, 'cost' => @cost.to_cents, 'frequency' => @frequency.to_i, 'url' => @url}
+    subscriptions[slug] = { 'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
     update_subscriptions subscriptions
 
     session[:message] = "#{@name} has been updated."
