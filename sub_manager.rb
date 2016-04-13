@@ -3,6 +3,7 @@ require 'sinatra/reloader'
 require 'erubis'
 require 'yaml'
 require 'money'
+require 'bcrypt'
 require_relative 'html_helper'
 
 require 'pry'
@@ -77,12 +78,28 @@ def subscription_path
   end
 end
 
+def user_path
+  if ENV['RACK_ENV'] == 'test'
+    File.expand_path('../test/users.yml', __FILE__)
+  else
+    File.expand_path('../users.yml', __FILE__)
+  end
+end
+
 def subscriptions_to_manage
   YAML.load_file(subscription_path) || {}
 end
 
+def users_to_manage
+  YAML.load_file(user_path) || {}
+end
+
 def update_subscriptions(subscriptions)
   File.open(subscription_path, 'w') { |f| f.write subscriptions.to_yaml}
+end
+
+def update_users(users)
+  File.open(user_path, 'w') { |f| f.write users.to_yaml}
 end
 
 def invalid_request(message='Invalid Request.')
@@ -129,6 +146,17 @@ def set_subscription_params
   @frequency = params[:frequency].to_i
 end
 
+def validate_user
+  valid_user = true
+  password = params[:password]
+  user = params[:username]
+  valid_user &&= password.size >= 4 # Password must be 4 chars long
+  valid_user &&= password.size <= 20 # Password no longer than 20 characters
+  valid_user &&= user =~ /^[0-9A-z\-_]{3,20}$/# Only letters, numbers, hyphen and underscore, no spaces; Also, 3 to 20 characters
+end
+
+# ROUTES ------------------------------------------------------------
+
 get '/todo' do
   erb :todo
 end
@@ -153,7 +181,30 @@ post '/add' do
     redirect '/'
   else
     session[:message] = "Invalid."
+    status 400
     erb :add
+  end
+end
+
+get '/signup' do
+  erb :signup
+end
+
+post '/signup' do
+  if validate_user
+    users = users_to_manage
+    users[params[:username]] = {'password' => BCrypt::Password.create(params[:password]), 'subscriptions' => {} }
+    update_users users
+    
+    session[:username] = params[:username]
+
+    session[:message] = "Welcome, #{params[:username]}!"
+    redirect '/'
+  else
+    @username = params[:username]
+    session[:message] = 'Invalid inputs.'
+    status 401
+    erb :signup
   end
 end
 

@@ -14,10 +14,12 @@ class SubManagerTest < Minitest::Test
 
   def setup
     FileUtils.touch('test/subscriptions.yml')
+    FileUtils.touch('test/users.yml')
   end
 
   def teardown
     FileUtils.rm('test/subscriptions.yml')
+    FileUtils.rm('test/users.yml')
   end
 
   def body_includes(*values)
@@ -46,7 +48,13 @@ class SubManagerTest < Minitest::Test
                  'cost' => amount
   end
 
-  def create_user(username='Jerry', password='password')
+  def try_signup(username='Jerry', password='password')
+    post '/signup', 'username' => username, 'password' => password
+  end
+
+  def invalid_signup(username, password)
+    try_signup username, password
+    response_401?
   end
 
   # -------------------Tests-------------
@@ -54,10 +62,24 @@ class SubManagerTest < Minitest::Test
   def test_signup
     get '/signup'
     response_200?
-    body_includes 'Username', 'Password', 'Create User', 'Cancel', '<input'
+    body_includes 'Username', 'Password', 'Signup', '<input'
+
+    try_signup
+    response_302?
+    follow_redirect!
+
+    body_includes 'Welcome, Jerry!', "Jerry's Subscriptions"
   end
 
   def test_invalid_signup
+    valid_username = 'username1234'
+    valid_password = 'password1234'
+    invalid_signup valid_username, '' # no password
+    invalid_signup valid_username, 'toolongofapasswordtobeapasswordforthisapp'
+    invalid_signup '', valid_password # no username
+    invalid_signup 'username with spaces', valid_password
+    invalid_signup 'usernamewith%#$', valid_password
+    body_includes 'Invalid inputs.'
   end
 
   def test_login
