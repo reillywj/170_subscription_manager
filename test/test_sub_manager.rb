@@ -42,10 +42,14 @@ class SubManagerTest < Minitest::Test
                        url = 'www.hbr.com',
                        frequency = '1',
                        amount = '100.00')
-    post '/add', 'name' => name,
-                 'url' => url,
-                 'frequency' => frequency,
-                 'cost' => amount
+    # post '/add', 'name' => name,
+    #              'url' => url,
+    #              'frequency' => frequency,
+    #              'cost' => amount
+
+    subscriptions = subscriptions_to_manage
+    subscriptions[sluggify name] = {'name' => name, 'cost' => to_cents(amount), 'frequency' => frequency.to_i, 'url' => url }
+    update_subscriptions subscriptions
   end
 
   def try_signup(username='default', password='password')
@@ -59,6 +63,23 @@ class SubManagerTest < Minitest::Test
 
   def login_user(username='default', password='password')
     post '/login', 'username' => username, 'password' => password
+  end
+
+  def sign_up_and_log_in
+    try_signup
+    login_user
+    follow_redirect!
+  end
+
+  def not_logged_in_test(fullpath='/', message=nil)
+    get fullpath
+    response_200?
+    body_includes 'Sign Up', 'Username:', 'Password:', 'Already have an account? <a', 'Login Here!', message.to_s
+  end
+
+  def must_be_logged_in(fullpath, message="You must be logged in!")
+    not_logged_in_test(fullpath, message)
+    sign_up_and_log_in
   end
 
   # -------------------Tests-------------
@@ -105,9 +126,13 @@ class SubManagerTest < Minitest::Test
     body_includes 'Invalid.', 'value="default"'
   end
 
+  def test_not_logged_in
+    not_logged_in_test
+  end
+
   def test_index
+    must_be_logged_in '/', nil
     add_subscription 'Harvard Business Review'
-    follow_redirect!
 
     get '/'
     response_200?
@@ -115,13 +140,14 @@ class SubManagerTest < Minitest::Test
   end
 
   def test_new
+    must_be_logged_in '/add'
     get '/add'
     response_200?
     body_includes 'Add New Subscription', '</form>',
                   '<button type="submit">Add</button>',
                   'frequency', 'cost', 'url'
 
-    add_subscription
+    post '/add', 'name' => '/hbr', 'url' => 'www.hbr.com', 'cost' => '100.00', 'frequency' => '1'
     response_302?
 
     follow_redirect!
@@ -134,7 +160,7 @@ class SubManagerTest < Minitest::Test
 
   def test_view_subscription
     add_subscription
-    follow_redirect!
+    must_be_logged_in '/hbr'
 
     get '/hbr'
     response_200?
@@ -142,6 +168,7 @@ class SubManagerTest < Minitest::Test
   end
 
   def test_invalid_subscription
+    must_be_logged_in '/hbr'
     get '/hbr'
     response_302?
 
@@ -152,7 +179,8 @@ class SubManagerTest < Minitest::Test
 
   def test_sluggified_subscription
     add_subscription('Slugify Me!', 'www.slugify-me.com', '12', '10.99')
-    follow_redirect!
+
+    must_be_logged_in '/slugify-me'
 
     get '/slugify-me'
     response_200?
@@ -161,8 +189,8 @@ class SubManagerTest < Minitest::Test
 
   def test_edit
     add_subscription
-    follow_redirect!
 
+    must_be_logged_in '/hbr/edit'
     get '/hbr/edit'
     response_200?
     body_includes 'hbr', 'hbr', 'www.hbr.com', '100.00', '/hbr/edit', '<form', '<button type="submit">Update</button>'
@@ -170,7 +198,7 @@ class SubManagerTest < Minitest::Test
 
   def test_update_subscription
     add_subscription
-    follow_redirect!
+    must_be_logged_in '/hbr/edit'
 
     post '/hbr/edit',
          'name' => 'Harvard Business Review',
@@ -187,8 +215,8 @@ class SubManagerTest < Minitest::Test
   end
 
   def test_delete_subscription
+    must_be_logged_in '/hbr'
     add_subscription
-    follow_redirect!
 
     get '/hbr'
     body_includes '/hbr', '/hbr/delete', 'Delete'

@@ -155,6 +155,15 @@ def validate_user
   valid_user &&= user =~ /^[0-9A-z\-_]{3,20}$/# Only letters, numbers, hyphen and underscore, no spaces; Also, 3 to 20 characters
 end
 
+def must_be_logged_in(message="You must be logged in!", &block)
+  if session[:username]
+    yield
+  else
+    session[:message] = message if message
+    erb :default_index
+  end
+end
+
 # ROUTES ------------------------------------------------------------
 
 get '/todo' do
@@ -162,12 +171,14 @@ get '/todo' do
 end
 
 get '/' do
-  @subscriptions = subscriptions_to_manage
-  erb :index
+  must_be_logged_in(nil) do
+    @subscriptions = subscriptions_to_manage
+    erb :index
+  end
 end
 
 get '/add' do
-  erb :add
+  must_be_logged_in { erb :add }
 end
 
 post '/add' do
@@ -195,9 +206,7 @@ post '/signup' do
     users = users_to_manage
     users[params[:username]] = {'password' => BCrypt::Password.create(params[:password]), 'subscriptions' => {} }
     update_users users
-    
     session[:username] = params[:username]
-
     session[:message] = "Welcome, #{params[:username]}!"
     redirect '/'
   else
@@ -233,51 +242,59 @@ get '/logout' do
 end
 
 get '/:subscription' do
-  if subscriptions_to_manage.key? params[:subscription]
-    subscription params[:subscription]
-    erb :subscription
-  else
-    invalid_request
+  must_be_logged_in do
+    if subscriptions_to_manage.key? params[:subscription]
+      subscription params[:subscription]
+      erb :subscription
+    else
+      invalid_request
+    end
   end
 end
 
 get '/:subscription/edit' do
-  if subscriptions_to_manage.key? params[:subscription]
-    subscription params[:subscription]
-    erb :edit
-  else
-    invalid_request
+  must_be_logged_in do
+    if subscriptions_to_manage.key? params[:subscription]
+      subscription params[:subscription]
+      erb :edit
+    else
+      invalid_request
+    end
   end
 end
 
 post '/:subscription/edit' do
-  set_subscription_params
-  if validate_subscription_params
-    subscriptions = subscriptions_to_manage
-    subscriptions.delete params[:subscription]
-    slug = sluggify @name
-    subscriptions[slug] = { 'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
-    update_subscriptions subscriptions
+  must_be_logged_in do
+    set_subscription_params
+    if validate_subscription_params
+      subscriptions = subscriptions_to_manage
+      subscriptions.delete params[:subscription]
+      slug = sluggify @name
+      subscriptions[slug] = { 'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
+      update_subscriptions subscriptions
 
-    session[:message] = "#{@name} has been updated."
-    redirect "/#{slug}"
-  else
-    session[:message] = 'Invalid.'
-    erb :edit
+      session[:message] = "#{@name} has been updated."
+      redirect "/#{slug}"
+    else
+      session[:message] = 'Invalid.'
+      erb :edit
+    end
   end
 end
 
 post '/:subscription/delete' do
-  sub_to_delete = params[:subscription]
+  must_be_logged_in do
+    sub_to_delete = params[:subscription]
 
-  if subscriptions_to_manage.include? sub_to_delete
-    subs = subscriptions_to_manage
-    subs.delete sub_to_delete
-    update_subscriptions subs
-    session[:message] = "#{sub_to_delete} was deleted."
-    redirect '/'
-  else
-    invalid_request
+    if subscriptions_to_manage.include? sub_to_delete
+      subs = subscriptions_to_manage
+      subs.delete sub_to_delete
+      update_subscriptions subs
+      session[:message] = "#{sub_to_delete} was deleted."
+      redirect '/'
+    else
+      invalid_request
+    end
   end
 end
 
