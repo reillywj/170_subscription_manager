@@ -48,13 +48,17 @@ class SubManagerTest < Minitest::Test
                  'cost' => amount
   end
 
-  def try_signup(username='Jerry', password='password')
+  def try_signup(username='default', password='password')
     post '/signup', 'username' => username, 'password' => password
   end
 
   def invalid_signup(username, password)
     try_signup username, password
     response_401?
+  end
+
+  def login_user(username='default', password='password')
+    post '/login', 'username' => username, 'password' => password
   end
 
   # -------------------Tests-------------
@@ -68,7 +72,7 @@ class SubManagerTest < Minitest::Test
     response_302?
     follow_redirect!
 
-    body_includes 'Welcome, Jerry!', "Jerry's Subscriptions"
+    body_includes 'Welcome, default!', "default's Subscriptions"
   end
 
   def test_invalid_signup
@@ -83,9 +87,18 @@ class SubManagerTest < Minitest::Test
   end
 
   def test_login
+    try_signup
+
     get '/login'
     response_200?
     body_includes 'Login', 'Username', 'Password', 'Submit'
+
+    login_user
+    response_302?
+
+    follow_redirect!
+    body_includes 'Welcome back, default!', "default's Subscriptions", 'Add Subscription'
+
   end
 
   def test_index

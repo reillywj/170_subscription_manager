@@ -212,6 +212,23 @@ get '/login' do
   erb :login
 end
 
+post '/login' do
+  users = users_to_manage
+  if users[params[:username]] && users[params[:username]]['password'] == params[:password]
+    session[:message] = "Welcome back, #{params[:username]}!"
+    session[:username] = params[:username]
+    redirect '/'
+  else
+    session[:message] = "Invalid."
+    erb :login
+  end
+end
+
+get '/logout' do
+  session.delete :username
+  redirect '/'
+end
+
 get '/:subscription' do
   if subscriptions_to_manage.key? params[:subscription]
     subscription params[:subscription]

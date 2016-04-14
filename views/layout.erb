@@ -8,6 +8,11 @@
   <div>
     <a href="/todo">Todo</a>
     <a href="/" class="link">Home</a>
+    <% if session[:username] %>
+      <a href="/logout" class="link">Log Out</a>
+    <% else %>
+      <a href="/login" class="link">Login</a>
+    <% end %>
   </div>
   <% if session[:message] %>
     <div class="message"><%= session.delete :message %></div>
