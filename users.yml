@@ -7,3 +7,11 @@ wreilly:
     salt: "$2a$10$.KxNivgvAp.zOPg3NKLJQu"
     checksum: XqXe58MWMMSzdkhnJBl/Pr7PluOIQDq
   subscriptions: {}
+default:
+  password: !ruby/string:BCrypt::Password
+    str: "$2a$10$KQNRcbfWs9A0SKzUnqxwnel4/l6lTqXzL0Ryuk1KZ91oMaj2vRQDO"
+    version: 2a
+    cost: 10
+    salt: "$2a$10$KQNRcbfWs9A0SKzUnqxwne"
+    checksum: l4/l6lTqXzL0Ryuk1KZ91oMaj2vRQDO
+  subscriptions: {}
