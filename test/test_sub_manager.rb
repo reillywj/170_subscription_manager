@@ -83,7 +83,9 @@ class SubManagerTest < Minitest::Test
   end
 
   def test_login
-    skip
+    get '/login'
+    response_200?
+    body_includes 'Login', 'Username', 'Password', 'Submit'
   end
 
   def test_index

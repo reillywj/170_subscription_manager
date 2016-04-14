@@ -1,0 +1,10 @@
+<form method='post' action='/login'>
+  <legend>Login</legend>
+  <label for='username'>Username: </label>
+  <input name='username' type='text' <%= 'value="' + @username + '"' if @username %>/>
+  <br>
+  <label for='password'>Password: </label>
+  <input name='password' type='password'/>
+  <br>
+  <button type='submit'>Submit</button>
+</form>

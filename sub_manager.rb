@@ -208,6 +208,10 @@ post '/signup' do
   end
 end
 
+get '/login' do
+  erb :login
+end
+
 get '/:subscription' do
   if subscriptions_to_manage.key? params[:subscription]
     subscription params[:subscription]
