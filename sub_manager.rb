@@ -214,12 +214,15 @@ end
 
 post '/login' do
   users = users_to_manage
-  if users[params[:username]] && users[params[:username]]['password'] == params[:password]
-    session[:message] = "Welcome back, #{params[:username]}!"
-    session[:username] = params[:username]
+  username = params[:username]
+  if users[username] && users[username]['password'] == params[:password]
+    session[:message] = "Welcome back, #{username}!"
+    session[:username] = username
     redirect '/'
   else
+    @username = username
     session[:message] = "Invalid."
+    status 401
     erb :login
   end
 end

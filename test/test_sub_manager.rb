@@ -95,10 +95,14 @@ class SubManagerTest < Minitest::Test
 
     login_user
     response_302?
-
     follow_redirect!
     body_includes 'Welcome back, default!', "default's Subscriptions", 'Add Subscription'
+  end
 
+  def test_invalid_login
+    login_user
+    response_401?
+    body_includes 'Invalid.', 'value="default"'
   end
 
   def test_index
