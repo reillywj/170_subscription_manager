@@ -1,11 +1,11 @@
 ---
 wreilly:
   password: !ruby/string:BCrypt::Password
-    str: "$2a$10$.KxNivgvAp.zOPg3NKLJQuXqXe58MWMMSzdkhnJBl/Pr7PluOIQDq"
+    str: "$2a$10$ufefBnkR.rRfezmLkusLfegpBNxqx7fnqgWEt8stqBB7eM/eny6sy"
     version: 2a
     cost: 10
-    salt: "$2a$10$.KxNivgvAp.zOPg3NKLJQu"
-    checksum: XqXe58MWMMSzdkhnJBl/Pr7PluOIQDq
+    salt: "$2a$10$ufefBnkR.rRfezmLkusLfe"
+    checksum: gpBNxqx7fnqgWEt8stqBB7eM/eny6sy
   subscriptions: {}
 default:
   password: !ruby/string:BCrypt::Password
@@ -14,4 +14,9 @@ default:
     cost: 10
     salt: "$2a$10$EqNkKrZSV4gv7F/Vj9UgIu"
     checksum: g72jOu7lgbbWR1OoIfA9KKvGIEV.iii
-  subscriptions: {}
+  subscriptions:
+    magazine:
+      name: Magazine
+      cost: 10000
+      frequency: 1
+      url: www.magazine.com
