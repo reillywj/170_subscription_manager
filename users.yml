@@ -20,3 +20,11 @@ default:
       cost: 10000
       frequency: 1
       url: www.magazine.com
+newuser:
+  password: !ruby/string:BCrypt::Password
+    str: "$2a$10$s9.btM6tOTgU5vSeor47VubpwHzK57kBnG9URKJ9YZ1mx/gW/2ei2"
+    version: 2a
+    cost: 10
+    salt: "$2a$10$s9.btM6tOTgU5vSeor47Vu"
+    checksum: bpwHzK57kBnG9URKJ9YZ1mx/gW/2ei2
+  subscriptions: {}
