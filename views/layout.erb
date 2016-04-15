@@ -5,16 +5,14 @@
   <link rel="stylesheet" type="text/css" href="/main.css">
 </head>
 <body>
-  <div>
+  <nav>
+    <a href="/" class="link">Home</a>
     <% if session[:username] %>
-      <a href="/" class="link">Home</a>
-      <% if session[:username] %>
-        <a href="/logout" class="link">Log Out</a>
-      <% else %>
-        <a href="/login" class="link">Login</a>
-      <% end %>
+      <a href="/logout" class="link">Log Out</a>
+    <% else %>
+      <a href="/login" class="link">Login</a>
     <% end %>
-  </div>
+  </nav>
   <% if session[:message] %>
     <div class="message"><%= session.delete :message %></div>
   <% end %>
