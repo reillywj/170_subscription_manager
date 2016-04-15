@@ -13,12 +13,12 @@ class SubManagerTest < Minitest::Test
   end
 
   def setup
-    FileUtils.touch('test/subscriptions.yml')
+    # FileUtils.touch('test/subscriptions.yml')
     FileUtils.touch('test/users.yml')
   end
 
   def teardown
-    FileUtils.rm('test/subscriptions.yml')
+    # FileUtils.rm('test/subscriptions.yml')
     FileUtils.rm('test/users.yml')
   end
 
@@ -38,19 +38,7 @@ class SubManagerTest < Minitest::Test
     end
   end
 
-  def add_subscription(username = 'default', name = 'hbr',
-                       url = 'www.hbr.com',
-                       frequency = '1',
-                       amount = '100.00')
-    # post '/add', 'name' => name,
-    #              'url' => url,
-    #              'frequency' => frequency,
-    #              'cost' => amount
-
-    # Old way
-    # subscriptions = subscriptions_to_manage
-    # subscriptions[sluggify name] = {'name' => name, 'cost' => to_cents(amount), 'frequency' => frequency.to_i, 'url' => url }
-    # update_subscriptions subscriptions
+  def add_subscription(username = 'default', name = 'hbr', url = 'www.hbr.com', frequency = '1', amount = '100.00')
     users = users_to_manage
     users[username]['subscriptions'][sluggify(name)] = { 'name' => name, 'cost' => to_cents(amount), 'frequency' => frequency.to_i, 'url' => url } if users[username]
     update_users users
@@ -98,6 +86,7 @@ class SubManagerTest < Minitest::Test
     follow_redirect!
 
     body_includes 'Welcome, default!', "default's Subscriptions"
+
   end
 
   def test_invalid_signup
@@ -136,11 +125,17 @@ class SubManagerTest < Minitest::Test
 
   def test_index
     must_be_logged_in '/', nil
-    add_subscription 'default', 'Harvard Business Review'
 
     get '/'
     response_200?
-    body_includes 'Add Subscription', 'Harvard Business Review', '/harvard-business-review', 'Total'
+    refute_includes last_response.body, '</table>'
+    body_includes 'Add Subscription', "You don't have any subscriptions to manage. Try adding one."
+
+    add_subscription 'default', 'Harvard Business Review'
+    get '/'
+    response_200?
+    body_includes 'Add Subscription', 'Harvard Business Review', '/harvard-business-review'
+    
   end
 
   def test_new
@@ -183,7 +178,7 @@ class SubManagerTest < Minitest::Test
   def test_sluggified_subscription
     must_be_logged_in '/slugify-me'
     add_subscription('default', 'Slugify Me!', 'www.slugify-me.com', '12', '10.99')
-    
+
     get '/slugify-me'
     response_200?
     body_includes 'Slugify Me!', 'www.slugify-me.com', '$10.99/month'

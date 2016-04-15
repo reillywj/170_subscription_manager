@@ -2,4 +2,8 @@
 
 <p><a class="link" href="/add">Add Subscription</a></p>
 
-<%= show_subscriptions %>
+<% if @subscriptions.empty? %>
+  <p>You don't have any subscriptions to manage. Try adding one.</p>
+<% else %>
+  <%= show_subscriptions %>
+<% end %>
