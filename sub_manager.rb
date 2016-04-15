@@ -87,16 +87,18 @@ def user_path
 end
 
 def subscriptions_to_manage
-  YAML.load_file(subscription_path) || {}
+  users_to_manage[session[:username]]['subscriptions']
 end
 
 def users_to_manage
   YAML.load_file(user_path) || {}
 end
 
-def update_subscriptions(subscriptions)
-  File.open(subscription_path, 'w') { |f| f.write subscriptions.to_yaml}
-end
+# outdated
+# 
+# def update_subscriptions(subscriptions)
+#   File.open(subscription_path, 'w') { |f| f.write subscriptions.to_yaml}
+# end
 
 def update_users(users)
   File.open(user_path, 'w') { |f| f.write users.to_yaml}
@@ -184,9 +186,12 @@ end
 post '/add' do
   set_subscription_params
   if validate_subscription_params
-    subscriptions = subscriptions_to_manage
-    subscriptions[sluggify @name] = {'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
-    update_subscriptions subscriptions
+    # subscriptions = subscriptions_to_manage
+    # subscriptions[sluggify @name] = {'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
+    # update_subscriptions subscriptions
+    users = users_to_manage
+    users[session[:username]]['subscriptions'][sluggify(@name)] = {'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
+    update_users users
 
     session[:message] = "#{@name} has been added to your subscriptions."
     redirect '/'
@@ -267,11 +272,11 @@ post '/:subscription/edit' do
   must_be_logged_in do
     set_subscription_params
     if validate_subscription_params
-      subscriptions = subscriptions_to_manage
-      subscriptions.delete params[:subscription]
-      slug = sluggify @name
-      subscriptions[slug] = { 'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
-      update_subscriptions subscriptions
+      users = users_to_manage
+      users[session[:username]]['subscriptions'].delete(params[:subscription])
+      slug = sluggify(@name)
+      users[session[:username]]['subscriptions'][slug] = { 'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url }
+      update_users users
 
       session[:message] = "#{@name} has been updated."
       redirect "/#{slug}"
@@ -287,9 +292,12 @@ post '/:subscription/delete' do
     sub_to_delete = params[:subscription]
 
     if subscriptions_to_manage.include? sub_to_delete
-      subs = subscriptions_to_manage
-      subs.delete sub_to_delete
-      update_subscriptions subs
+      # subs = subscriptions_to_manage
+      # subs.delete sub_to_delete
+      # update_subscriptions subs
+      users = users_to_manage
+      users[session[:username]]['subscriptions'].delete(sub_to_delete)
+      update_users users
       session[:message] = "#{sub_to_delete} was deleted."
       redirect '/'
     else

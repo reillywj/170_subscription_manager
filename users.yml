@@ -9,9 +9,9 @@ wreilly:
   subscriptions: {}
 default:
   password: !ruby/string:BCrypt::Password
-    str: "$2a$10$KQNRcbfWs9A0SKzUnqxwnel4/l6lTqXzL0Ryuk1KZ91oMaj2vRQDO"
+    str: "$2a$10$EqNkKrZSV4gv7F/Vj9UgIug72jOu7lgbbWR1OoIfA9KKvGIEV.iii"
     version: 2a
     cost: 10
-    salt: "$2a$10$KQNRcbfWs9A0SKzUnqxwne"
-    checksum: l4/l6lTqXzL0Ryuk1KZ91oMaj2vRQDO
+    salt: "$2a$10$EqNkKrZSV4gv7F/Vj9UgIu"
+    checksum: g72jOu7lgbbWR1OoIfA9KKvGIEV.iii
   subscriptions: {}

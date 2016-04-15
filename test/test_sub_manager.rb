@@ -38,7 +38,7 @@ class SubManagerTest < Minitest::Test
     end
   end
 
-  def add_subscription(name = 'hbr',
+  def add_subscription(username = 'default', name = 'hbr',
                        url = 'www.hbr.com',
                        frequency = '1',
                        amount = '100.00')
@@ -47,9 +47,13 @@ class SubManagerTest < Minitest::Test
     #              'frequency' => frequency,
     #              'cost' => amount
 
-    subscriptions = subscriptions_to_manage
-    subscriptions[sluggify name] = {'name' => name, 'cost' => to_cents(amount), 'frequency' => frequency.to_i, 'url' => url }
-    update_subscriptions subscriptions
+    # Old way
+    # subscriptions = subscriptions_to_manage
+    # subscriptions[sluggify name] = {'name' => name, 'cost' => to_cents(amount), 'frequency' => frequency.to_i, 'url' => url }
+    # update_subscriptions subscriptions
+    users = users_to_manage
+    users[username]['subscriptions'][sluggify(name)] = { 'name' => name, 'cost' => to_cents(amount), 'frequency' => frequency.to_i, 'url' => url } if users[username]
+    update_users users
   end
 
   def try_signup(username='default', password='password')
@@ -132,7 +136,7 @@ class SubManagerTest < Minitest::Test
 
   def test_index
     must_be_logged_in '/', nil
-    add_subscription 'Harvard Business Review'
+    add_subscription 'default', 'Harvard Business Review'
 
     get '/'
     response_200?
@@ -159,9 +163,8 @@ class SubManagerTest < Minitest::Test
   end
 
   def test_view_subscription
-    add_subscription
     must_be_logged_in '/hbr'
-
+    add_subscription
     get '/hbr'
     response_200?
     body_includes 'hbr', 'www.hbr.com', '$100.00/year', '/hbr/edit', 'Edit'
@@ -178,27 +181,25 @@ class SubManagerTest < Minitest::Test
   end
 
   def test_sluggified_subscription
-    add_subscription('Slugify Me!', 'www.slugify-me.com', '12', '10.99')
-
     must_be_logged_in '/slugify-me'
-
+    add_subscription('default', 'Slugify Me!', 'www.slugify-me.com', '12', '10.99')
+    
     get '/slugify-me'
     response_200?
     body_includes 'Slugify Me!', 'www.slugify-me.com', '$10.99/month'
   end
 
   def test_edit
-    add_subscription
-
     must_be_logged_in '/hbr/edit'
+    add_subscription
     get '/hbr/edit'
     response_200?
     body_includes 'hbr', 'hbr', 'www.hbr.com', '100.00', '/hbr/edit', '<form', '<button type="submit">Update</button>'
   end
 
   def test_update_subscription
-    add_subscription
     must_be_logged_in '/hbr/edit'
+    add_subscription
 
     post '/hbr/edit',
          'name' => 'Harvard Business Review',
