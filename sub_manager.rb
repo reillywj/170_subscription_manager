@@ -94,12 +94,6 @@ def users_to_manage
   YAML.load_file(user_path) || {}
 end
 
-# outdated
-# 
-# def update_subscriptions(subscriptions)
-#   File.open(subscription_path, 'w') { |f| f.write subscriptions.to_yaml}
-# end
-
 def update_users(users)
   File.open(user_path, 'w') { |f| f.write users.to_yaml}
 end
