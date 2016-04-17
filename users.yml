@@ -6,12 +6,7 @@ wreilly:
     cost: 10
     salt: "$2a$10$oKip/TGQhd4ODLbVgdvNQ."
     checksum: jsyYrNxwBrm//NM26lubCWF9gWrE7Wy
-  subscriptions:
-    rosehulman:
-      name: Rose-Hulman
-      cost: 100000
-      frequency: 12
-      url: www.rose-hulman.edu/
+  subscriptions: {}
 default:
   password: !ruby/string:BCrypt::Password
     str: "$2a$10$EqNkKrZSV4gv7F/Vj9UgIug72jOu7lgbbWR1OoIfA9KKvGIEV.iii"

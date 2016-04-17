@@ -16,6 +16,11 @@ body {
   font-size: 18px;
 }
 
+.link:hover {
+  text-decoration: underline;
+  color: white;
+}
+
 .link.subscription {
   font-size: 14px;
 }
