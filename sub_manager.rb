@@ -142,13 +142,25 @@ def set_subscription_params
   @frequency = params[:frequency].to_i
 end
 
+def message(msg)
+  session[:message] = msg
+end
+
 def validate_user
   valid_user = true
   password = params[:password]
   user = params[:username]
+
   valid_user &&= password.size >= 4 # Password must be 4 chars long
   valid_user &&= password.size <= 20 # Password no longer than 20 characters
   valid_user &&= user =~ /^[0-9A-z\-_]{3,20}$/# Only letters, numbers, hyphen and underscore, no spaces; Also, 3 to 20 characters
+  if users_to_manage[user]
+    message 'Username taken.'
+    valid_user &&= false
+  else
+    message 'Invalid inputs.'
+  end
+  valid_user
 end
 
 def must_be_logged_in(message="You must be logged in!", &block)
@@ -157,6 +169,22 @@ def must_be_logged_in(message="You must be logged in!", &block)
   else
     session[:message] = message if message
     erb :default_index
+    # halt
+  end
+end
+
+def sanitize_url(url)
+  url = url.split('?').first
+  url = url.split(/https{0,1}\:\/\//)[-1]
+  url = if url =~ /www\./
+    url
+  else
+    "www.#{url}"
+  end
+  if url =~ /\/$/
+    url
+  else
+    url + '/'
   end
 end
 
@@ -180,11 +208,8 @@ end
 post '/add' do
   set_subscription_params
   if validate_subscription_params
-    # subscriptions = subscriptions_to_manage
-    # subscriptions[sluggify @name] = {'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
-    # update_subscriptions subscriptions
     users = users_to_manage
-    users[session[:username]]['subscriptions'][sluggify(@name)] = {'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url}
+    users[session[:username]]['subscriptions'][sluggify(@name)] = {'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => sanitize_url(@url)}
     update_users users
 
     session[:message] = "#{@name} has been added to your subscriptions."
@@ -210,7 +235,7 @@ post '/signup' do
     redirect '/'
   else
     @username = params[:username]
-    session[:message] = 'Invalid inputs.'
+    # session[:message] = 'Invalid inputs.'
     status 401
     erb :signup
   end
@@ -269,7 +294,7 @@ post '/:subscription/edit' do
       users = users_to_manage
       users[session[:username]]['subscriptions'].delete(params[:subscription])
       slug = sluggify(@name)
-      users[session[:username]]['subscriptions'][slug] = { 'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => @url }
+      users[session[:username]]['subscriptions'][slug] = { 'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => sanitize_url(@url) }
       update_users users
 
       session[:message] = "#{@name} has been updated."
@@ -286,9 +311,6 @@ post '/:subscription/delete' do
     sub_to_delete = params[:subscription]
 
     if subscriptions_to_manage.include? sub_to_delete
-      # subs = subscriptions_to_manage
-      # subs.delete sub_to_delete
-      # update_subscriptions subs
       users = users_to_manage
       users[session[:username]]['subscriptions'].delete(sub_to_delete)
       update_users users

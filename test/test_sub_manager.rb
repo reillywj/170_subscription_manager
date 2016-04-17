@@ -100,6 +100,14 @@ class SubManagerTest < Minitest::Test
     body_includes 'Invalid inputs.'
   end
 
+  def test_invalid_signup_duplicate_user
+    try_signup 'test_username', 'password'
+    follow_redirect!
+    try_signup 'test_username', 'password'
+    response_401?
+    body_includes 'Username taken.', 'test_username'
+  end
+
   def test_login
     try_signup
 
@@ -226,6 +234,12 @@ class SubManagerTest < Minitest::Test
 
     get '/'
     refute_includes last_response.body, 'hbr'
+  end
+
+  def test_sanitize_url
+    assert_equal 'www.google.com/something/', sanitize_url('www.google.com/something?name=some-value')
+    assert_equal 'www.google.com/', sanitize_url('www.google.com/')
+    assert_equal 'www.google.com/', sanitize_url('https://google.com')
   end
 end
 
