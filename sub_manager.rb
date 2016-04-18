@@ -6,7 +6,7 @@ require 'money'
 require 'bcrypt'
 require_relative 'html_helper'
 
-require 'pry'
+# require 'pry'
 
 
 configure do
@@ -324,7 +324,9 @@ end
 
 
 
-
+not_found do
+  redirect '/'
+end
 
 
 

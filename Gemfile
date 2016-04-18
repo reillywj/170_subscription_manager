@@ -8,3 +8,7 @@ gem 'erubis'
 gem 'minitest'
 gem 'money'
 gem 'bcrypt'
+
+group :production do
+  gem 'puma'
+end
