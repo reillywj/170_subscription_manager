@@ -137,7 +137,7 @@ class SubManagerTest < Minitest::Test
     get '/'
     response_200?
     refute_includes last_response.body, '</table>'
-    body_includes 'Add Subscription', "You don't have any subscriptions to manage. Try adding one."
+    body_includes 'Add Subscription', "You don't have any subscriptions to manage."
 
     add_subscription 'default', 'Harvard Business Review'
     get '/'
