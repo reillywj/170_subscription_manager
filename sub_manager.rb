@@ -3,6 +3,7 @@ require 'sinatra/reloader'
 require 'erubis'
 require 'yaml'
 require 'money'
+require 'monetize'
 require 'bcrypt'
 require_relative 'html_helper'
 
@@ -126,15 +127,6 @@ def validate_subscription_params
   [1, 2, 4, 12].include?(@frequency)
 end
 
-def to_cents(input_string)
-  dollars, cents = input_string.split('.')
-  dollars = dollars.to_i * 100
-  unless cents.nil?
-    cents += '0' if cents.size == 1
-  end
-  dollars + cents.to_i
-end
-
 def set_subscription_params
   @name = params[:name]
   @url = params[:url]
@@ -209,7 +201,7 @@ post '/add' do
   set_subscription_params
   if validate_subscription_params
     users = users_to_manage
-    users[session[:username]]['subscriptions'][sluggify(@name)] = {'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => sanitize_url(@url)}
+    users[session[:username]]['subscriptions'][sluggify(@name)] = {'name' => @name, 'cost' => @cost.to_money.cents, 'frequency' => @frequency.to_i, 'url' => sanitize_url(@url)}
     update_users users
 
     session[:message] = "#{@name} has been added to your subscriptions."
@@ -294,7 +286,7 @@ post '/:subscription/edit' do
       users = users_to_manage
       users[session[:username]]['subscriptions'].delete(params[:subscription])
       slug = sluggify(@name)
-      users[session[:username]]['subscriptions'][slug] = { 'name' => @name, 'cost' => to_cents(@cost), 'frequency' => @frequency.to_i, 'url' => sanitize_url(@url) }
+      users[session[:username]]['subscriptions'][slug] = { 'name' => @name, 'cost' => @cost.to_money.cents, 'frequency' => @frequency.to_i, 'url' => sanitize_url(@url) }
       update_users users
 
       session[:message] = "#{@name} has been updated."

@@ -6,6 +6,8 @@ GEM
     erubis (2.7.0)
     i18n (0.7.0)
     minitest (5.8.4)
+    monetize (1.4.0)
+      money (~> 6.7)
     money (6.7.0)
       i18n (>= 0.6.4, <= 0.7.0)
       sixarm_ruby_unaccent (>= 1.1.1, < 2)
@@ -37,6 +39,7 @@ DEPENDENCIES
   bcrypt
   erubis
   minitest
+  monetize
   money
   puma
   sinatra (~> 1.4.6)

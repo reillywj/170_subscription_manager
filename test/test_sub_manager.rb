@@ -13,12 +13,10 @@ class SubManagerTest < Minitest::Test
   end
 
   def setup
-    # FileUtils.touch('test/subscriptions.yml')
     FileUtils.touch('test/users.yml')
   end
 
   def teardown
-    # FileUtils.rm('test/subscriptions.yml')
     FileUtils.rm('test/users.yml')
   end
 
@@ -40,7 +38,7 @@ class SubManagerTest < Minitest::Test
 
   def add_subscription(username = 'default', name = 'hbr', url = 'www.hbr.com', frequency = '1', amount = '100.00')
     users = users_to_manage
-    users[username]['subscriptions'][sluggify(name)] = { 'name' => name, 'cost' => to_cents(amount), 'frequency' => frequency.to_i, 'url' => url } if users[username]
+    users[username]['subscriptions'][sluggify(name)] = { 'name' => name, 'cost' => amount.to_money.cents, 'frequency' => frequency.to_i, 'url' => url } if users[username]
     update_users users
   end
 

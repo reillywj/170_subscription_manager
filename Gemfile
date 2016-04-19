@@ -7,6 +7,7 @@ gem 'sinatra-contrib'
 gem 'erubis'
 gem 'minitest'
 gem 'money'
+gem 'monetize'
 gem 'bcrypt'
 
 group :production do
