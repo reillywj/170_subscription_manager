@@ -5,7 +5,7 @@
 <form method='post' action='/signup'>
   <legend>Sign Up</legend>
   <label for='username'>Username: </label>
-  <input type='text' name='username' <%= "value='#{@username}'" if @username %>>
+  <input type='text' name='username' value="<%= @username %>">
   <br>
   <label for='password'>Password: </label>
   <input type='password' name='password'/>
