@@ -1,9 +1,0 @@
----
-wreilly:
-  password: !ruby/string:BCrypt::Password
-    str: "$2a$10$yYMOZk/KJ36Ha7R47ptlSO4f2b0ZdAmoyCUjpfHd5vh5JWGQgYR2K"
-    version: 2a
-    cost: 10
-    salt: "$2a$10$yYMOZk/KJ36Ha7R47ptlSO"
-    checksum: 4f2b0ZdAmoyCUjpfHd5vh5JWGQgYR2K
-  subscriptions: {}
