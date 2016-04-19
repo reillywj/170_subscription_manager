@@ -152,7 +152,7 @@ class SubManagerTest < Minitest::Test
                   '<button type="submit">Add</button>',
                   'frequency', 'cost', 'url'
 
-    post '/add', 'name' => '/hbr', 'url' => 'www.hbr.com', 'cost' => '100.00', 'frequency' => '1'
+    post '/add', 'name' => 'hbr', 'url' => 'www.hbr.com', 'cost' => '100.00', 'frequency' => '1'
     response_302?
 
     follow_redirect!
@@ -161,6 +161,25 @@ class SubManagerTest < Minitest::Test
 
     get '/'
     refute_includes last_response.body, expected_message
+  end
+
+  def invalid_new(*params)
+    post params.first
+    response_400?
+    body_includes 'Invalid'
+  end
+
+  def test_invalid_new
+    must_be_logged_in '/add'
+
+    invalid_new '/add', 'name' => 'hbr', 'cost' => '100.00', 'frequency' => '1' # No url
+    invalid_new '/add', 'name' => 'hbr', 'url' => 'www.something.com', 'frequency' => '1' # No cost
+    invalid_new '/add', 'name' => 'hbr', 'cost' => '100.00', 'url' => 'www.something.com' # No frequency
+    invalid_new '/add', 'cost' => '100.00', 'url' => 'www.something.com', 'frequency' => '1' # No name
+    invalid_new '/add', 'name' => 'hbr', 'url' => 'www.hbr.c', 'cost' => '100.00', 'frequency' => '1' # partial .com
+    invalid_new '/add', 'name' => 'hbr', 'url' => 'www.', 'cost' => '100.00', 'frequency' => '1' # only www.
+    invalid_new '/add', 'name' => 'hbr', 'url' => 'http://', 'cost' => '100.00', 'frequency' => '1' # only www.
+    invalid_new '/add', 'name' => 'hbr', 'url' => '.com', 'cost' => '100.00', 'frequency' => '1' # only .com
   end
 
   def test_view_subscription
@@ -240,20 +259,6 @@ class SubManagerTest < Minitest::Test
     assert_equal 'www.google.com/', sanitize_url('https://google.com')
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -122,9 +122,11 @@ def validate_cost
 end
 
 def validate_subscription_params
+  @name && @frequency && @url && @cost &&
   @name.size > 0 &&
   validate_cost &&
-  [1, 2, 4, 12].include?(@frequency)
+  [1, 2, 4, 12].include?(@frequency) &&
+  @url =~ /(http[s]{0,1}:\/\/){0,1}(www\.){0,1}([^\.]\S*)(\.([A-z]{1,3})(\/.*)*)/
 end
 
 def set_subscription_params
